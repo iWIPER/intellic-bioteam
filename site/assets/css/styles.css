@@ -198,6 +198,13 @@ td.win { background: rgba(47,191,113,.22); font-weight: 700; } td.win2 { backgro
 details.sim { margin-top: 24px; } details.sim summary { cursor: pointer; font-weight: 700; padding: 14px 18px; border-radius: 14px; background: var(--painel); border: 1px solid var(--borda); }
 .sliders label { display: grid; grid-template-columns: 60px 1fr 26px; align-items: center; gap: 8px; color: var(--suave); font-size: .85rem; }
 input[type=range] { accent-color: var(--fogo); width: 100%; }
-.rodape { text-align: center; color: #7f97b8; font-size: .82rem; margin-top: 40px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,.1); }
-.rodape a { color: var(--fogo2); }
+.rodape { margin-top: 48px; padding-top: 22px; border-top: 1px solid rgba(255,255,255,.1);
+  display: grid; grid-template-columns: 1fr auto; gap: 10px 24px; align-items: center; font-size: .85rem; color: #7f97b8; }
+.rodape-marca { display: flex; flex-direction: column; gap: 2px; }
+.rodape-marca strong { font: 700 1.05rem var(--display); color: var(--texto); }
+.rodape-links { display: flex; gap: 20px; flex-wrap: wrap; }
+.rodape-links a { color: var(--suave); text-decoration: none; }
+.rodape-links a:hover, .rodape-links a:focus-visible { color: var(--fogo2); }
+.rodape-copy { grid-column: 1 / -1; font-size: .78rem; }
+@media (max-width: 640px) { .rodape { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
