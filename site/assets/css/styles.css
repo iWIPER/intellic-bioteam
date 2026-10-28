@@ -118,6 +118,14 @@ p { margin: 0; }
 .trilho div { height: 100%; border-radius: 99px; }
 .linha b { text-align: right; color: #fff; }
 .nota p { color: #d6e4fa; font-size: .88rem; margin-top: 8px; }
+.fontes { list-style: none; counter-reset: f; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+.fontes li { counter-increment: f; position: relative; background: rgba(0,0,0,.22); border-radius: 16px; padding: 16px 16px 14px 52px; display: flex; flex-direction: column; gap: 6px; }
+.fontes li::before { content: counter(f); position: absolute; left: 16px; top: 14px; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center;
+  background: rgba(255,179,71,.18); color: var(--fogo2); font: 700 .85rem var(--display); }
+.fontes b { font-family: var(--display); } .fontes span { color: #d6e4fa; font-size: .92rem; }
+.fontes .usado { font-size: .8rem; color: var(--mudo); display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.fontes .usado i { font-style: normal; font-weight: 700; font-size: .72rem; padding: 2px 8px; border-radius: 99px; background: var(--c); color: #fff; }
+.fontes a { color: var(--fogo2); font-size: .85rem; font-weight: 600; margin-top: auto; }
 .tarefa { display: flex; gap: 14px; padding: 14px 16px; border-radius: 16px; background: rgba(0,0,0,.22); }
 .tarefa b { display: block; } .tarefa span { color: var(--suave); font-size: .93rem; }
 

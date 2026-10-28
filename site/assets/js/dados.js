@@ -100,3 +100,76 @@ export const LEIT = { EFI: "Helena e Marcos acreditam; Raimundo e Jaci duvidam q
   ESC: "A maior briga: Helena dá 9, Raimundo dá 3. O satélite enxerga, a brigada nem sempre chega.",
   SOC: "O alerta ainda não chega à aldeia: baixa adesão das comunidades." };
 
+// Tipo de cada fonte, usado na aba Fontes.
+export const TIPO_FONTE = {
+  "INPE · Programa Queimadas": "Órgãos públicos", "INPE · satélite de referência": "Órgãos públicos", "INPE · dados de 2024": "Órgãos públicos",
+  "INPE · julho de 2024": "Órgãos públicos", "Ibama · Prevfogo": "Órgãos públicos", "Presidente do Ibama": "Órgãos públicos",
+  "Prevfogo · mais de 30 anos": "Órgãos públicos", "Ibama · brigadistas Yanomami": "Órgãos públicos", "Fundo Amazônia · BNDES": "Órgãos públicos",
+  "Câmara dos Deputados · Comissão de Meio Ambiente": "Órgãos públicos", "Embrapa": "Órgãos públicos",
+  "Lei 14.944/2024": "Legislação",
+  "Revista CERNE · UFLA, 2012": "Pesquisa científica", "Pesquisa da UFRRJ com o BDQueimadas": "Pesquisa científica",
+  "MapBiomas Fogo": "Pesquisa científica", "IPAM · florestas públicas não destinadas": "Pesquisa científica",
+};
+
+// Fontes públicas que embasam a posição de cada agente. Cada item: [quem publicou, o que diz, link].
+export const FONTES = {
+  helena: {
+    intro: "A Helena só fala do que dá para medir. O que ela usou:",
+    itens: [
+      ["INPE · Programa Queimadas", "Um foco de calor é registrado quando o satélite vê mais de 47 °C numa área de pelo menos 900 m². O dado sai uns 20 minutos depois da passagem do satélite.",
+        "https://dataserver-coids.inpe.br/queimadas/queimadas/Publicacoes-Impacto/material3os/2011_Gontijo_etal_Deteccao_XVSBSR_DE3os.pdf"],
+      ["INPE · satélite de referência", "Desde agosto de 2007 a série histórica usa o mesmo satélite (AQUA). É isso que permite comparar um ano com o outro sem trapaça.",
+        "https://dataserver-coids.inpe.br/queimadas/queimadas/Publicacoes-Impacto/documentos/principio_fisico_detecta_queimadas.pdf"],
+      ["INPE · dados de 2024", "Até o começo de dezembro de 2024 a Amazônia teve 137.538 focos, o maior número em 17 anos. Só 2007 foi pior. O bioma concentrou 50,6% dos focos do país.",
+        "https://portalamazonia.com/meio-ambiente/amazonia-maior-numero-de-queimadas-17-anos/"],
+      ["Revista CERNE · UFLA, 2012", "O limite que ela admite: num estudo de validação dos focos do INPE, só cerca de 26% das cicatrizes de queimada foram detectadas. O sistema falha nas áreas menores que 100 ha.",
+        "https://www.redalyc.org/articulo.oa?id=74423522019"],
+      ["Pesquisa da UFRRJ com o BDQueimadas", "Contar focos não é medir área queimada. O foco mostra onde e por quanto tempo o fogo aparece, não o tamanho do estrago.",
+        "https://rima.ufrrj.br/jspui/handle/20.500.14407/21185"],
+    ],
+  },
+  raimundo: {
+    intro: "O Raimundo fala de campo. Os números que sustentam o que ele diz:",
+    itens: [
+      ["Ibama · Prevfogo", "Em junho de 2024 o Prevfogo abriu contratação de 1.803 brigadistas. Por ano entram em média 50 brigadas indígenas em cerca de 40 terras indígenas; para 2024 estavam previstas 57.",
+        "https://static.aosfatos.org/media/cke_uploads/2024/06/24/brigadistas-do-ibama-no-xingu-1.pdf"],
+      ["INPE · julho de 2024", "Foram 11.434 focos na Amazônia em julho, contra uma média histórica de 6.164. Primeira vez desde 2005 que julho passou de 10 mil. É a seca chegando antes da brigada.",
+        "https://ihu.unisinos.br/641957-brasil-incendiado-pais-viveu-o-pior-julho-em-registros-de-incendio-em-quase-duas-decadas"],
+      ["MapBiomas Fogo", "Cerca de 30 milhões de hectares queimaram no Brasil em 2024, 62% acima da média. Só de floresta foram 7,7 milhões de hectares. Fogo em floresta é o mais difícil de segurar.",
+        "https://brasil.mapbiomas.org/wp-content/uploads/sites/4/2025/06/Fact_Fogo_colecao4.pdf"],
+      ["Lei 14.944/2024", "A política nacional manda incentivar a criação e o treinamento de brigadas e prevê um cadastro nacional de brigadas florestais.",
+        "https://www.migalhas.com.br/quentes/412492/lei-que-define-regras-para-uso-de-fogo-em-areas-rurais-e-sancionada"],
+    ],
+  },
+  marcos: {
+    intro: "O Marcos olha orçamento, lei e quem paga a conta. As referências dele:",
+    itens: [
+      ["Fundo Amazônia · BNDES", "Em novembro de 2023 o teto por estado subiu de R$ 35 milhões para R$ 45 milhões: R$ 405 milhões para os nove estados da Amazônia Legal, com projetos apresentados pelos Corpos de Bombeiros.",
+        "https://agenciagov.ebc.com.br/noticias/202311/fundo-amazonia-amplia-para-r-405-milhoes-apoio-aos-estados-contra-incendios-florestais"],
+      ["Lei 14.944/2024", "Sancionada em 31 de julho de 2024, criou a Política Nacional de Manejo Integrado do Fogo e mexeu no Código Florestal e na Lei de Crimes Ambientais. O comitê nacional tem pelo menos um terço de sociedade civil.",
+        "https://www.migalhas.com.br/quentes/412492/lei-que-define-regras-para-uso-de-fogo-em-areas-rurais-e-sancionada"],
+      ["IPAM · florestas públicas não destinadas", "Em 2019, 20% dos focos de calor da Amazônia estavam em florestas públicas sem destinação, sinal forte de grilagem. E cerca de 75% do que é desmatado nelas vira pasto.",
+        "https://www.ecycle.com.br/florestas-publicas-nao-destinadas-na-amazonia-sao-alvos-de-grilagem/"],
+      ["MapBiomas Fogo", "De 1985 a 2024, pastagem responde por 53,2% da área queimada na Amazônia. O fogo grande tem dono e tem motivo econômico.",
+        "https://brasil.mapbiomas.org/wp-content/uploads/sites/4/2025/06/Fact_Fogo_colecao4.pdf"],
+      ["Câmara dos Deputados · Comissão de Meio Ambiente", "Audiência de 13 de agosto de 2024 sobre integrar União, estados e municípios contra desmatamento, queimadas, fumaça e seca no Amazonas.",
+        "https://www2.camara.leg.br/atividade-legislativa/comissoes/comissoes-permanentes/cmads/apresentacoes-em-eventos/apresentacoes-de-convidados-em-eventos-de-2024/13-08-2024-integrar-esforcos-entre-os-diferentes-entes-federados-no-combate-ao-desmatamento-as-queimadas-a-fumaca-toxica-e-a-estiagem-dos-rios-no-amazonas/andre-lima/view"],
+    ],
+  },
+  jaci: {
+    intro: "A Jaci fala do território. O que mostra que ela não está sozinha:",
+    itens: [
+      ["Lei 14.944/2024", "A lei reconhece o papel do fogo nos ecossistemas e manda respeitar os saberes tradicionais. Permite o fogo na roça de subsistência de indígenas, quilombolas e comunidades tradicionais, e coloca os povos indígenas na gestão da política.",
+        "https://semil.sp.gov.br/educacaoambiental/prateleira-ambiental/politica-nacional-de-manejo-integrado-do-fogo/"],
+      ["Presidente do Ibama", "Segundo o Ibama, metade dos brigadistas federais contratados (Ibama e ICMBio) são indígenas e 20% são quilombolas.",
+        "https://www.bahianoticias.com.br/noticia/296418-presidente-do-ibama-diz-que-estrutura-de-guerra-para-combater-incendios-tem-maioria-de-indigenas-e-quilombolas"],
+      ["Prevfogo · mais de 30 anos", "O conhecimento indígena sobre manejo do fogo é usado pelo Prevfogo há mais de três décadas.",
+        "https://portalamazonia.com/meio-ambiente/conhecimento-indigena-no-manejo-de-fogo-e-destaque-na-atuacao-do-prevfogo-ha-mais-de-30-anos/"],
+      ["Ibama · brigadistas Yanomami", "Brigadistas Yanomami de diferentes povos foram treinados para prevenir e combater incêndios dentro do próprio território.",
+        "https://portalamazonia.com/meio-ambiente/brigadistas-yanomami-combate-incendios/"],
+      ["Embrapa", "A Embrapa defende que o manejo do fogo é possível e funciona, posição que o governo endossou com a lei de 2024.",
+        "https://forbes.com.br/forbes-agro/2024/08/manejo-do-fogo-embrapa-diz-que-e-possivel-e-governo-endossa-com-lei/"],
+    ],
+  },
+};
+

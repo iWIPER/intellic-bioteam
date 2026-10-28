@@ -1,7 +1,16 @@
 import * as D from "./dados.js";
 import * as K from "./calculo.js";
 
-const { LIMITE, PROBLEMA, CRIT, ESP, EQUIPE, CORES, TAREFAS, STATS, LEIT } = D;
+const { LIMITE, PROBLEMA, CRIT, ESP, EQUIPE, CORES, TAREFAS, STATS, LEIT, FONTES } = D;
+
+function fontesAgente(a) {
+  const f = FONTES[a.id];
+  if (!f) return "";
+  return `<div class="card" style="margin-top:22px"><h3>${ic("bookmark", 20, "#ffb347")}De onde vêm os argumentos</h3>
+    <p class="lead" style="margin-bottom:14px">${esc(f.intro)}</p>
+    <ol class="fontes">${f.itens.map(([org, txt, url]) => `<li><b>${esc(org)}</b><span>${esc(txt)}</span>
+      <a href="${url}" target="_blank" rel="noopener">Ver a fonte ↗</a></li>`).join("")}</ol></div>`;
+}
 const { arred, classificar, COR_ESTADO, calcular, CALC, GC, GI, ESTADO } = K;
 
 // ============================================================ utilitários
@@ -120,7 +129,8 @@ function paginaAgente(a) {
           ${a.respostas.map(([q, t]) => `<div class="resp">${ic("message-circle", 20, c1)}<div><b>Para ${q}</b><span>${esc(t)}</span></div></div>`).join("")}</div>
       </div>
     </div></div>
-  <div class="card" style="margin-top:22px"><h3>${ic("gauge", 20, "#ffb347")}Notas lançadas no IntelliC</h3><div class="notas">${notas}</div></div>`;
+  <div class="card" style="margin-top:22px"><h3>${ic("gauge", 20, "#ffb347")}Notas lançadas no IntelliC</h3><div class="notas">${notas}</div></div>
+  ${fontesAgente(a)}`;
 }
 function paginaEspecialistas(sub) {
   const a = ESP.find(x => x.id === sub) || ESP[0];
@@ -270,12 +280,32 @@ function atualizarSimulador() {
   $("#sim-quad").innerHTML = quadradoSVG(simCrit, [gc, gi]);
 }
 
+// ---- fontes de pesquisa
+function paginaFontes() {
+  const porUrl = new Map();
+  for (const a of ESP) for (const [org, txt, url] of (FONTES[a.id]?.itens ?? [])) {
+    if (!porUrl.has(url)) porUrl.set(url, { org, txt, url, agentes: [] });
+    porUrl.get(url).agentes.push(a);
+  }
+  const ordem = ["Órgãos públicos", "Legislação", "Pesquisa científica"];
+  const grupos = ordem.map(t => [t, [...porUrl.values()].filter(f => (D.TIPO_FONTE[f.org] ?? "Pesquisa científica") === t)]);
+  const icone = { "Órgãos públicos": "landmark", "Legislação": "scale", "Pesquisa científica": "search" };
+  return `${titulo("bookmark", "Fontes de pesquisa", "Nada do que os agentes dizem saiu da cabeça deles. Cada argumento se apoia em dado público: órgão do governo, lei ou pesquisa. Abaixo está tudo o que usamos, com o link para conferir.")}
+  <div class="grid g3" style="margin-bottom:8px">${grupos.map(([t, l]) => `<div class="card stat"><b>${l.length}</b><span>${t.toLowerCase()}</span></div>`).join("")}</div>
+  ${grupos.map(([t, lista]) => `${titulo(icone[t], t, "", "p")}
+    <ol class="fontes">${lista.map(f => `<li><b>${esc(f.org)}</b><span>${esc(f.txt)}</span>
+      <span class="usado">Usado por: ${f.agentes.map(a => `<i style="--c:${a.cores[0]}">${a.curto}</i>`).join(" ")}</span>
+      <a href="${f.url}" target="_blank" rel="noopener">Ver a fonte ↗</a></li>`).join("")}</ol>`).join("")}
+  <div class="card" style="margin-top:24px"><h3>${ic("eye", 20, "#ffb347")}Como usamos essas fontes</h3>
+    <p style="color:#d6e4fa">Cada agente recebeu as fontes da área dele antes de dar as notas. A Helena se apoia no INPE, o Raimundo no Prevfogo e no MapBiomas, o Marcos no Fundo Amazônia, no IPAM e na lei, e a Jaci na lei de manejo do fogo e no trabalho com brigadas indígenas. Por isso as notas divergem: cada um enxerga um pedaço real do problema.</p></div>`;
+}
+
 // ============================================================ navegação
-const ABAS = ["inicio", "especialistas", "resultado", "facilitadores", "analistas"];
+const ABAS = ["inicio", "especialistas", "resultado", "fontes", "facilitadores", "analistas"];
 let estado = { aba: "inicio", sub: null };
 function render() {
   document.querySelectorAll(".aba").forEach(b => b.setAttribute("aria-selected", b.dataset.aba === estado.aba));
-  const html = { inicio: paginaInicio, especialistas: () => paginaEspecialistas(estado.sub), resultado: paginaResultado,
+  const html = { inicio: paginaInicio, especialistas: () => paginaEspecialistas(estado.sub), resultado: paginaResultado, fontes: paginaFontes,
     facilitadores: () => paginaGrupo("facilitadores", estado.sub), analistas: () => paginaGrupo("analistas", estado.sub) }[estado.aba]();
   $("#conteudo").innerHTML = html;
   preencherRobos();
