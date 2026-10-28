@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Marcos Albuquerque Ferreira — Agente IntelliC</title>
+<style>
+:root{--navy:#0b2545;--navy2:#13315c;--green:#2e8b57;--green2:#8fd3a8;--gold:#d4a017;--gold2:#f3d27a;--bg:#f4f6fa;--ink:#1c2433;--card:#fff;--red:#c0392b}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55}
+header{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;padding:28px 16px 70px;text-align:center;border-bottom:5px solid var(--gold)}
+header small{letter-spacing:.12em;text-transform:uppercase;color:var(--gold2);font-size:.72rem}
+header h1{font-size:1.5rem;margin-top:6px}
+header p{opacity:.85;font-size:.92rem;margin-top:4px}
+main{max-width:860px;margin:-50px auto 0;padding:0 14px 30px}
+.card{background:var(--card);border-radius:16px;padding:18px;margin-bottom:16px;box-shadow:0 4px 18px rgba(11,37,69,.10)}
+.card h2{font-size:1.05rem;color:var(--navy);margin-bottom:10px;padding-left:10px;border-left:4px solid var(--gold)}
+.hero{text-align:center}
+.bubble{position:relative;background:var(--navy);color:#fff;border-radius:14px;padding:12px 14px;font-size:.95rem;font-style:italic;max-width:520px;margin:0 auto 18px}
+.bubble:after{content:"";position:absolute;left:50%;bottom:-10px;margin-left:-10px;border:10px solid transparent;border-top-color:var(--navy);border-bottom:0}
+svg.robot{width:230px;max-width:70%;height:auto;overflow:visible}
+.eye{transform-box:fill-box;transform-origin:center;animation:blink 4s infinite}
+@keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.08)}}
+.body{animation:bob 3s ease-in-out infinite;transform-origin:center bottom}
+@keyframes bob{50%{transform:translateY(-3px)}}
+.board{transform-origin:15px 8px;animation:sway 2.6s ease-in-out infinite}
+@keyframes sway{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(7deg)}}
+.bar{transform-box:fill-box;transform-origin:bottom;animation:grow 2.8s ease-in-out infinite}
+.b2{animation-delay:.2s}.b3{animation-delay:.4s}.b4{animation-delay:.6s}
+@keyframes grow{0%{transform:scaleY(.15)}60%,100%{transform:scaleY(1)}}
+.ant{animation:pulse 1.6s infinite}
+@keyframes pulse{50%{opacity:.35}}
+.info{display:grid;gap:10px}
+.info div{background:var(--bg);border-radius:10px;padding:10px 12px;font-size:.92rem}
+.info b{display:block;color:var(--green);font-size:.72rem;text-transform:uppercase;letter-spacing:.08em}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.chip{background:var(--navy);color:#fff;border-radius:20px;padding:3px 10px;font-size:.78rem}
+.chip i{color:var(--gold2);font-style:normal;font-weight:700;margin-right:4px}
+.reply{border-left:4px solid var(--green);background:#f0f8f3;border-radius:0 10px 10px 0;padding:10px 12px;margin-top:10px;font-size:.93rem}
+.reply b{color:var(--navy)}
+.reply.j{border-color:var(--gold);background:#fcf6e3}
+.crit{border:1px solid #e1e6ef;border-radius:12px;padding:12px;margin-bottom:10px}
+.crit h3{font-size:.95rem;color:var(--navy);display:flex;justify-content:space-between;gap:8px;align-items:center}
+.tag{font-size:.7rem;border-radius:10px;padding:2px 8px;color:#fff;white-space:nowrap}
+.row{display:flex;align-items:center;gap:8px;margin-top:7px;font-size:.8rem}
+.row span.l{width:52px;font-weight:600}
+.track{flex:1;background:#e8ecf3;border-radius:8px;height:14px;overflow:hidden}
+.fill{height:100%;width:0;border-radius:8px;transition:width 1.2s ease}
+.f-c{background:linear-gradient(90deg,var(--green),var(--green2))}
+.f-d{background:linear-gradient(90deg,var(--gold),var(--gold2))}
+.row span.n{width:22px;text-align:right;font-weight:700}
+.why{margin-top:8px;font-size:.85rem;color:#44506a}
+table{display:none;width:100%;border-collapse:collapse;font-size:.88rem}
+th{background:var(--navy);color:#fff;text-align:left;padding:8px}
+td{padding:8px;border-bottom:1px solid #e1e6ef;vertical-align:middle}
+.legend{font-size:.78rem;color:#55617a;margin-top:6px}
+@media(min-width:700px){.info{grid-template-columns:1fr 1fr}.crit{display:none}table{display:table}header h1{font-size:1.9rem}}
+footer{background:var(--navy);color:var(--gold2);text-align:center;padding:16px;font-size:.82rem;border-top:4px solid var(--gold)}
+</style>
+</head>
+<body>
+<header>
+<small>Estudo de decisão colaborativa · IntelliC</small>
+<h1>Marcos Albuquerque Ferreira</h1>
+<p>Monitoramento por satélite com alerta precoce reduz incêndios na Amazônia?</p>
+</header>
+<main>
+
+<section class="card hero">
+<div class="bubble">"O dado é público, o caro é a resposta. E ninguém para de grilar por causa de um ponto no mapa."</div>
+<svg class="robot" viewBox="0 0 240 280" role="img" aria-label="Robô gestor Marcos com gravata, prancheta e gráfico">
+<g class="body">
+<line x1="120" y1="18" x2="120" y2="40" stroke="#13315c" stroke-width="4"/>
+<circle class="ant" cx="120" cy="14" r="7" fill="#d4a017"/>
+<rect x="72" y="40" width="96" height="76" rx="22" fill="#e8eef7" stroke="#0b2545" stroke-width="4"/>
+<rect x="84" y="54" width="72" height="40" rx="14" fill="#0b2545"/>
+<ellipse class="eye" cx="105" cy="73" rx="7" ry="9" fill="#8fd3a8"/>
+<ellipse class="eye" cx="135" cy="73" rx="7" ry="9" fill="#8fd3a8"/>
+<path d="M104 104 Q120 114 136 104" stroke="#0b2545" stroke-width="4" fill="none" stroke-linecap="round"/>
+<rect x="64" y="124" width="112" height="96" rx="18" fill="#13315c" stroke="#0b2545" stroke-width="4"/>
+<path d="M104 124 L120 146 L136 124 Z" fill="#fff"/>
+<path d="M120 146 L113 154 L120 200 L127 154 Z" fill="#d4a017" stroke="#a87c0f" stroke-width="2"/>
+<rect x="26" y="130" width="34" height="14" rx="7" fill="#e8eef7" stroke="#0b2545" stroke-width="3"/>
+<g transform="translate(176,132)"><rect x="0" y="0" width="30" height="10" rx="5" fill="#e8eef7" stroke="#0b2545" stroke-width="3"/>
+<g class="board"><rect x="6" y="-8" width="56" height="74" rx="6" fill="#d4a017" stroke="#8a6508" stroke-width="3"/>
+<rect x="12" y="2" width="44" height="58" rx="3" fill="#fff"/>
+<rect x="24" y="-12" width="20" height="9" rx="3" fill="#0b2545"/>
+<rect class="bar" x="16" y="30" width="7" height="24" fill="#2e8b57"/>
+<rect class="bar b2" x="26" y="22" width="7" height="32" fill="#13315c"/>
+<rect class="bar b3" x="36" y="14" width="7" height="40" fill="#2e8b57"/>
+<rect class="bar b4" x="46" y="8" width="7" height="46" fill="#d4a017"/>
+<line x1="14" y1="54" x2="54" y2="54" stroke="#0b2545" stroke-width="1.5"/></g></g>
+<rect x="84" y="220" width="20" height="38" rx="6" fill="#0b2545"/>
+<rect x="136" y="220" width="20" height="38" rx="6" fill="#0b2545"/>
+<rect x="76" y="254" width="36" height="14" rx="7" fill="#2e8b57"/>
+<rect x="128" y="254" width="36" height="14" rx="7" fill="#2e8b57"/>
+</g>
+</svg>
+</section>
+
+<section class="card">
+<h2>Cartão do especialista</h2>
+<div class="info">
+<div><b>Nome</b>Marcos Albuquerque Ferreira</div>
+<div><b>Função</b>Secretário-adjunto de Meio Ambiente do Estado (gestor público)</div>
+<div><b>Formação</b>Administrador público, com especialização em políticas ambientais</div>
+<div><b>Experiência</b>10 anos em gestão de orçamento e de programas entre órgãos</div>
+<div style="grid-column:1/-1"><b>O que ele avalia</b>
+<div class="chips" style="background:none;padding:0"><span class="chip">Custo</span><span class="chip">Orçamento</span><span class="chip">Base legal</span><span class="chip">Integração entre órgãos</span><span class="chip">Viabilidade política</span></div></div>
+</div>
+</section>
+
+<section class="card">
+<h2>Posição de Marcos</h2>
+<p>O satélite é o melhor custo-benefício que o Estado tem: o dado do INPE é público e cobre a Amazônia inteira todo dia. Mas alerta não apaga fogo nem prende grileiro. O que pesa no orçamento é a resposta: brigada pré-posicionada, base avançada, combustível, diárias e fiscalização com respaldo legal.</p>
+<p style="margin-top:8px">Eu aprovo a estratégia se o recurso para a resposta vier junto, em convênio entre órgãos e com continuidade além de um mandato. Sem isso, vira painel bonito e floresta queimada. E, com El Niño no segundo semestre, não dá para prometer o que o caixa não cobre.</p>
+<div class="reply"><b>Para a Dra. Helena:</b> Concordo que cada alerta vira prova, mas só se houver fiscal e processo para usá-la; sem isso, é arquivo.</div>
+<div class="reply"><b>Para o Raimundo:</b> Você tem razão: alerta barato sem brigada é falsa economia, e por isso proponho amarrar o orçamento da resposta ao do monitoramento.</div>
+<div class="reply j"><b>Antecipando a Jaci Apurinã:</b> Se o alerta não chega na aldeia, o sistema falha de verdade, e levar o dado até lá (rádio, celular, brigada indígena) precisa constar no orçamento.</div>
+</section>
+
+<section class="card">
+<h2>Critérios: Chance × Dúvida</h2>
+<div id="cards"></div>
+<table id="tab"><thead><tr><th>Critério</th><th style="width:26%">Chance</th><th style="width:26%">Dúvida</th><th>Justificativa</th><th>Leitura</th></tr></thead><tbody></tbody></table>
+<p class="legend">Chance alta + Dúvida baixa = convicção · Chance alta + Dúvida alta = contradição · Chance baixa + Dúvida baixa = falta de informação.</p>
+</section>
+
+</main>
+<footer>Agente de IA fictício — Estudo IntelliC · SEDCITEC IFSP 2026</footer>
+
+<script>
+const D=[
+{k:"EFI",n:"Reduz a área queimada de forma mensurável",c:7,d:4,j:"Alertas caíram no PA e MT e focos no AC, mas o El Niño pode desfazer o ganho."},
+{k:"CAU",n:"Ataca a causa (uso criminoso do fogo)",c:3,d:3,j:"Alerta sozinho não atinge a grilagem; só vira prova se houver fiscalização."},
+{k:"CUS",n:"Custo sustentável no longo prazo",c:8,d:5,j:"O dado é barato e público; o custo real e incerto está na resposta de campo."},
+{k:"ESC",n:"Alcança áreas remotas com a logística que existe",c:7,d:5,j:"O satélite cobre tudo, mas a brigada depende de base, estrada e rio."},
+{k:"SOC",n:"Tem adesão das comunidades locais",c:3,d:6,j:"Alerta não chega à aldeia e não tenho dado sobre a adesão local."}];
+function leitura(c,d){const hc=c>=5,hd=d>=5;
+ if(hc&&!hd)return["Convicção","#2e8b57"];
+ if(hc&&hd)return["Contradição","#c0392b"];
+ if(!hc&&!hd)return["Falta de informação","#7a869a"];
+ return["Descrença","#13315c"];}
+const cards=document.getElementById("cards"),tb=document.querySelector("#tab tbody");
+const bar=(cls,v)=>`<div class="track"><div class="fill ${cls}" data-w="${v*10}"></div></div>`;
+D.forEach(x=>{const [t,col]=leitura(x.c,x.d);
+ cards.insertAdjacentHTML("beforeend",`<div class="crit"><h3><span>${x.k} · ${x.n}</span><span class="tag" style="background:${col}">${t}</span></h3>
+ <div class="row"><span class="l">Chance</span>${bar("f-c",x.c)}<span class="n">${x.c}</span></div>
+ <div class="row"><span class="l">Dúvida</span>${bar("f-d",x.d)}<span class="n">${x.d}</span></div>
+ <p class="why">${x.j}</p></div>`);
+ tb.insertAdjacentHTML("beforeend",`<tr><td><b>${x.k}</b><br><small>${x.n}</small></td>
+ <td><div class="row" style="margin:0">${bar("f-c",x.c)}<span class="n">${x.c}</span></div></td>
+ <td><div class="row" style="margin:0">${bar("f-d",x.d)}<span class="n">${x.d}</span></div></td>
+ <td>${x.j}</td><td><span class="tag" style="background:${col}">${t}</span></td></tr>`);});
+setTimeout(()=>document.querySelectorAll(".fill").forEach(f=>f.style.width=f.dataset.w+"%"),250);
+</script>
+</body>
+</html>
