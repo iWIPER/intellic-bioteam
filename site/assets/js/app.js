@@ -58,14 +58,20 @@ async function roboHTML(id) {
   }).catch(() => "");
   return cacheRobo[id];
 }
-function reel({ miolo, nome, papel, cores, mini = false }) {
+// Barras estilo Stories: uma por membro do grupo; as anteriores cheias, a atual enchendo, as próximas vazias.
+function barras(atual, total = 4) {
+  return Array.from({ length: total }, (_, i) => `<i class="${i < atual ? "cheia" : i === atual ? "on" : ""}"></i>`).join("");
+}
+const ORDEM_EQUIPE = [...EQUIPE.facilitadores, ...EQUIPE.analistas].map(p => p.slug);
+
+function reel({ miolo, nome, papel, cores, mini = false, pos = 0, total = 4 }) {
   return `<div class="reel${mini ? " mini" : ""}" style="--c1:${cores[0]};--c2:${cores[1]}"><div class="tela">
-    <div class="barras"><i class="on"></i><i></i><i></i></div>
+    ${mini ? `<div class="barras" aria-hidden="true">${barras(pos, total)}</div>` : ""}
     <div class="topo"><span>iC</span>IntelliC · BIOTEAM</div>${miolo}
     <div class="legenda"><b>${esc(nome)}</b><em>${esc(papel)}</em></div></div></div>`;
 }
-const reelAgente = (a, mini) => reel({ miolo: `<iframe title="Robô de ${esc(a.curto)}" data-robo="${a.id}" sandbox="allow-same-origin" loading="lazy"></iframe>`, nome: a.nome, papel: a.papel, cores: a.cores, mini });
-const reelPessoa = (p, cores, mini) => reel({ miolo: `<img src="assets/caricaturas/${p.slug}.jpg" alt="Caricatura de ${esc(p.nome)}">`, nome: p.nome, papel: p.papel, cores, mini });
+const reelAgente = (a, mini) => reel({ miolo: `<iframe title="Robô de ${esc(a.curto)}" data-robo="${a.id}" sandbox="allow-same-origin" loading="lazy"></iframe>`, nome: a.nome, papel: a.papel, cores: a.cores, mini, pos: ESP.indexOf(a), total: ESP.length });
+const reelPessoa = (p, cores, mini) => reel({ miolo: `<img src="assets/caricaturas/${p.slug}.jpg" alt="Caricatura de ${esc(p.nome)}">`, nome: p.nome, papel: p.papel, cores, mini, pos: ORDEM_EQUIPE.indexOf(p.slug), total: ORDEM_EQUIPE.length });
 async function preencherRobos() {
   for (const f of document.querySelectorAll("iframe[data-robo]")) { if (!f.srcdoc) f.srcdoc = await roboHTML(f.dataset.robo); }
 }
@@ -87,14 +93,18 @@ function paginaInicio() {
       <h1 class="hero-title">IntelliC</h1>
       <p class="sub2">Inteligência Colaborativa com Lógica Paraconsistente</p>
       <p class="q">Quem decide como <span>apagar o fogo?</span></p>
+      <div class="hero-resp">${ic("gauge", 18, COR_ESTADO[ESTADO])}<span>Resposta do estudo: <b>sozinho, o satélite não resolve</b> · ${badge(ESTADO)}</span></div>
+      <div class="hero-acoes"><a class="btn prim" href="#resultado">Ver o resultado</a><a class="btn" href="#especialistas">Conhecer os especialistas</a></div>
     </section>
     <div class="grid">
       <div class="card"><h3>${ic("target", 20, "#ffb347")}Problema em análise</h3><p class="problema">${PROBLEMA}</p></div>
-      <div class="grid g2">${[["4", "especialistas"], ["5", "critérios"], ["20", "pareceres"], ["60%", "limite"]].map(([n, l]) => `<div class="card stat"><b>${n}</b><span>${l}</span></div>`).join("")}</div>
+      <div class="grid g2">${[[`${sinal(GC)}%`, "viabilidade (GC)"], [`${sinal(GI)}%`, "dúvida (GI)"], [`+${LIMITE}%`, "para ser viável"], ["20", "pareceres"]].map(([n, l]) => `<div class="card stat"><b>${n}</b><span>${l}</span></div>`).join("")}</div>
     </div>
   </div>
-  ${titulo("bot", "Os especialistas", "Quatro agentes de IA, quatro saberes diferentes sobre o mesmo problema. A divergência entre eles é o que a Lógica Paraconsistente mede.")}
-  <div class="grid g4">${ESP.map(a => `<div class="reel-col"><p class="balao mini" style="--c:${a.cores[0]}">“${esc(a.frase)}”</p>${reelAgente(a, true)}</div>`).join("")}</div>
+  ${titulo("flame", "O problema em números", "Dados públicos de 2024, o pior ano de fogo na Amazônia em quase duas décadas.")}
+  <div class="grid g3">${NUMEROS.map(([n, t, fonte, url]) => `<div class="card numero"><b>${n}</b><p>${t}</p><a href="${url}" target="_blank" rel="noopener">${fonte} ↗</a></div>`).join("")}</div>
+  ${titulo("bot", "Os especialistas", "Quatro agentes de IA, quatro saberes diferentes sobre o mesmo problema. A divergência entre eles é o que a Lógica Paraconsistente mede. Clique em um para ver o perfil, as notas e as fontes.")}
+  <div class="grid g4">${ESP.map(a => `<a class="reel-col reel-link" href="#especialistas-${a.id}">${reelAgente(a, true)}<span class="avalia">${AVALIA[a.id]}</span></a>`).join("")}</div>
   <div class="card" style="margin-top:24px"><h3>${ic("compass", 20, "#ffb347")}Fluxo de governança</h3>
     <div class="flow">
       <div class="step" style="--c:#3a78d8"><b>${ic("compass", 20, "#8fb0e0")}Facilitadores</b><small>Montam o Problema, os critérios e os participantes</small></div>
@@ -103,8 +113,15 @@ function paginaInicio() {
       <div class="step" style="--c:#d4a017"><b>${ic("search", 20, "#d4a017")}Analistas</b><small>Leem o resultado e o Quadrado Mágico e traduzem em recomendação</small></div>
     </div></div>
   ${titulo("users", "Equipe BIOTEAM")}
-  <div class="grid g4">${pessoas.map(([p, c]) => `<div class="reel-col">${reelPessoa(p, c, true)}</div>`).join("")}</div>`;
+  <div class="grid g4">${pessoas.map(([p, c]) => `<a class="reel-col reel-link" href="#${EQUIPE.facilitadores.includes(p) ? "facilitadores" : "analistas"}-${p.slug}">${reelPessoa(p, c, true)}</a>`).join("")}</div>`;
 }
+const AVALIA = { helena: "Avalia se o alerta é confiável", raimundo: "Avalia se dá para chegar a tempo",
+  marcos: "Avalia custo, orçamento e lei", jaci: "Avalia se o alerta chega à aldeia" };
+const NUMEROS = [
+  ["137.538", "focos de calor na Amazônia em 2024 (até dezembro). O maior número em 17 anos.", "INPE · Programa Queimadas", "https://portalamazonia.com/meio-ambiente/amazonia-maior-numero-de-queimadas-17-anos/"],
+  ["30 mi ha", "queimados no Brasil em 2024, 62% acima da média histórica. Só de floresta, 7,7 milhões de hectares.", "MapBiomas Fogo", "https://brasil.mapbiomas.org/wp-content/uploads/sites/4/2025/06/Fact_Fogo_colecao4.pdf"],
+  ["R$ 405 mi", "do Fundo Amazônia para os Corpos de Bombeiros dos nove estados da Amazônia Legal.", "Fundo Amazônia · BNDES", "https://agenciagov.ebc.com.br/noticias/202311/fundo-amazonia-amplia-para-r-405-milhoes-apoio-aos-estados-contra-incendios-florestais"],
+];
 
 function paginaAgente(a) {
   const c1 = a.cores[0];
@@ -145,7 +162,9 @@ function paginaPessoa(p, grupo) {
     <div class="grid" style="gap:14px">
       <div class="kicker">${ic("users", 16, "#ffb347")}Equipe BIOTEAM · Desafio IntelliC</div>
       ${perfil(p.handle, p.nome, p.papel, STATS[grupo], [["briefcase", `${p.papel} no estudo IntelliC`], ["target", p.bio], ["map-pin", "SEDCITEC · IFSP 2026"]], cores[0])}
-      ${titulo("clipboard-list", "O que faz no estudo", "", "p")}
+      ${titulo("award", `O que ${esc(p.curto)} fez`, "", "p")}
+      <div class="grid g2">${(D.INDIVIDUAL[p.slug] ?? []).map(([i, t, d]) => `<div class="tarefa destaque-ind" style="--c:${cores[0]}">${ic(i, 24, cores[0])}<div><b>${t}</b><span>${d}</span></div></div>`).join("")}</div>
+      ${titulo("clipboard-list", `Tarefas de ${grupo === "facilitadores" ? "facilitador" : "analista"}`, grupo === "facilitadores" ? "Comuns aos dois facilitadores." : "Comuns às duas analistas.", "p")}
       <div class="grid g2">${TAREFAS[grupo].map(([i, t, d]) => `<div class="tarefa">${ic(i, 24, cores[0])}<div><b>${t}</b><span>${d}</span></div></div>`).join("")}</div>
     </div></div>`;
 }
@@ -221,7 +240,10 @@ function paginaResultado() {
   return `${titulo("gauge", "Resultado e explicabilidade", "O IntelliC não faz média de opiniões nem votação: ele mede a evidência a favor, a evidência contra e a contradição entre os especialistas.")}
   <section class="resposta1" style="--e:${COR_ESTADO[ESTADO]}"><div class="kicker">${ic("target", 16, "#ffb347")}A resposta do estudo em uma frase</div>
     <p class="frase-grande">Sozinho, o monitoramento por satélite <span>não resolve</span>: os especialistas ficaram no empate, levemente para o lado do “não funciona”.</p>
-    <p style="display:flex;gap:14px;flex-wrap:wrap;align-items:center">Classificação do IntelliC: ${badge(ESTADO)}<span class="confere">${ic("shield-check", 16, "#2fbf71")}Recalculado com o mesmo algoritmo do IntelliC v20 R10: confere com o sistema (GC −2%, GI 0%).</span></p></section>
+    <p style="display:flex;gap:14px;flex-wrap:wrap;align-items:center">Classificação do IntelliC: ${badge(ESTADO)}<span class="confere">${ic("shield-check", 16, "#2fbf71")}Recalculado com o mesmo algoritmo do IntelliC v20 R10: confere com o sistema (GC −2%, GI 0%).</span></p>
+    <div class="prints-sistema">${[6, 7].map(i => `<button class="foto mini-foto" data-foto="${i}" aria-label="Ampliar print do IntelliC: ${GALERIA[i][1]}"><img src="assets/galeria/${GALERIA[i][0]}.jpg" alt="${GALERIA[i][1]}"><span>Print do IntelliC · ${GALERIA[i][1]}</span></button>`).join("")}</div></section>
+  ${titulo("scale", "Por que não fizemos uma votação", "A mesma planilha de notas, lida de dois jeitos.", "p")}
+  ${votacaoVsIntellic()}
   ${titulo("gauge", "Os dois números do IntelliC, sem mistério", "", "p")}
   <div class="grid g2">
     ${regua("Índice de viabilidade (GC)", "A estratégia funciona?", GC, [["#e55353", "Não funciona"], ["#ff9a3c", "Pende para não"], ["#f5d547", "Pende para sim"], ["#2fbf71", "Funciona"]], lerGC(GC),
@@ -233,6 +255,8 @@ function paginaResultado() {
   <div class="card"><div class="media-cab"><span>Critério</span><span>Viabilidade (← não funciona · funciona →)</span><span>GC</span><span>GI</span></div>${medias}
     <div class="conta-media"><div><span>Viabilidade geral</span><b>(${ks.map(k => sinal(CALC[k].gc)).join(" ")}) ÷ 5 = ${sinal(GC)}%</b></div><div><span>Dúvida geral</span><b>(${ks.map(k => sinal(CALC[k].gi)).join(" ")}) ÷ 5 = ${sinal(GI)}%</b></div></div>
     <p class="porque">${ic("eye", 16, "#ffb347")} Atenção: no critério <b>Causa (CAU)</b> a viabilidade é −10% e a <b>dúvida</b> é −30%. Esse −30% significa <b>falta de informação</b>: ninguém acredita que o alerta ataque a grilagem.</p></div>
+  ${titulo("users", "Mapa da divergência", "Onde cada especialista puxou o resultado. A maior briga está no Alcance: a Helena chega a +60 e o Raimundo fica em 0.", "p")}
+  ${mapaDivergencia()}
   ${titulo("messages-square", "Como cada número nasce, com um exemplo real", "", "p")}
   <div class="grid g5">${passos.map(([n, i, t, d, ex]) => `<div class="passo"><span class="num">${n}</span>${ic(i, 22, "#ffb347")}<b>${t}</b><span>${d}</span><div class="exemplo">${ic("sparkles", 14, "#2fbf71")}<span>${ex}</span></div></div>`).join("")}</div>
   ${titulo("search", "Abra a conta de um critério", "Escolha um critério para ver a nota de cada especialista e como o IntelliC chegou ao resultado dele.", "p")}
@@ -249,6 +273,8 @@ function paginaResultado() {
       <div><b>A maior dúvida prevalece</b><span>Entre os grupos vale o <i>maior</i> GI. Se a dúvida chega a 60%, o resultado vira “dúvida excessiva”.</span></div>
       <div><b>A média puxa para o centro</b><span>O geral é a média dos 5 critérios: um critério fraco derruba os outros.</span></div></div>
     <p style="color:#d6e4fa;margin-top:12px">Para um critério ser <b>Viável</b>, cada grupo precisa de pelo menos um especialista com <b>Chance − Dúvida ≥ 6</b> (por exemplo, Chance 8 e Dúvida 2), e isso em todos os critérios para o geral passar de 60%. Por isso, na prática, resultados acima de 60–65% são raros.</p></div>
+  ${titulo("target", "O que faria a estratégia virar Viável", "Quanto falta, em cada critério, para o grupo mais cético chegar a +60.", "p")}
+  ${oQueFariaVirar()}
   <details class="sim"><summary>Simulador: e se os especialistas pensassem diferente?</summary>
     <div class="card" style="margin-top:12px"><div class="seg" role="group" aria-label="Critério do simulador" id="sim-crit">${ks.map(k => `<button data-simcrit="${k}" aria-pressed="${k === "ESC"}">${CRIT[k][0]} (${k})</button>`).join("")}</div>
       <div class="grid g4 sliders" id="sim-sliders"></div>
@@ -280,6 +306,109 @@ function atualizarSimulador() {
   $("#sim-quad").innerHTML = quadradoSVG(simCrit, [gc, gi]);
 }
 
+// ---- o IntelliC por dentro
+const GALERIA = [
+  ["01_login", "Entrada no sistema", "Login com usuário e senha. Cada pessoa da equipe e cada especialista tem a sua conta."],
+  ["02_dashboard", "Visão geral", "O painel mostra quantos problemas existem e em que etapa cada um está."],
+  ["03_problema", "Nosso problema cadastrado", "A pergunta, o cenário, o tipo colaborativo e o limite de decisão de 60%."],
+  ["04_criterios", "A régua: 5 critérios", "Eficácia, causa, custo, alcance e comunidades, definidos antes de qualquer nota."],
+  ["05_participantes", "Um papel por pessoa", "Facilitador, especialista ou analista. O sistema separa quem monta, quem opina e quem lê."],
+  ["06_pendencias", "Ninguém fica de fora", "O IntelliC só calcula quando todos responderam tudo. Aqui: 20 de 20."],
+  ["07_resultado", "O resultado", "No login da Joseane, analista: viabilidade −2%, dúvida 0%, tendência a ser inviável."],
+  ["08_quadrado", "Quadrado Mágico", "Ainda no login da Joseane: o ponto geral no centro, longe da faixa verde que marca o Viável."],
+  ["09_criterios_resultado", "Resultado por critério", "No login da Hellen, analista: cada critério com a própria viabilidade, dúvida e classificação."],
+  ["11_trilha", "Trilha de aprendizagem", "Os 40 estudos de caso que o sistema traz para ensinar o método."],
+  ["10_sobre", "Sobre o IntelliC", "Lógica Paraconsistente Anotada Evidencial Eτ, desenvolvida pelo Prof. Fábio."],
+  // 12 em diante: cada participante no próprio login
+  ["03_problema", "Wilk · Facilitador", "Cadastrou o problema, a régua e os participantes. Monta o estudo, mas não dá parecer nem interpreta o resultado."],
+  ["20_gislene", "Gislene · Facilitadora", "O sistema mostra: “Você participa como Facilitador”. Organiza a estrutura e os participantes."],
+  ["21_joseane", "Joseane · Analista", "Acompanha e interpreta o resultado, sem acesso para mudar notas ou critérios."],
+  ["22_hellen", "Hellen · Analista", "“Acesso em modo de consulta”: vê tudo, não altera nada. Exatamente o papel de analista."],
+  ["23_helena", "Helena · Especialista", "Os pareceres dela no próprio login: Eficácia 7/4, Causa 4/6…"],
+  ["24_raimundo", "Raimundo · Especialista", "As notas mais céticas: Eficácia 5/6, Causa 3/4…"],
+  ["25_marcos", "Marcos · Especialista", "O olhar do orçamento: Eficácia 7/4, Causa 3/3…"],
+  ["26_jaci", "Jaci · Especialista", "A voz do território: Eficácia 6/6, Causa 3/4…"],
+];
+const N_PASSOS = 11; // os 11 primeiros contam o estudo; os demais mostram cada login
+function paginaIntellic() {
+  const dif = [
+    ["scale", "Mede a contradição em vez de esconder", "Numa votação, quem acha 9 e quem acha 3 viram um 6 morno. O IntelliC guarda a briga e mostra onde ela está."],
+    ["shield-check", "Protege a autoria de cada opinião", "Só quem é especialista consegue dar parecer, e ninguém vê o parecer dos outros. Nem o dono do problema."],
+    ["clipboard-list", "Não calcula com dado faltando", "Enquanto falta uma resposta, o sistema avisa e espera. Nas palavras da tela de pendências: calcular com dados incompletos contamina a análise."],
+    ["target", "Explica o próprio resultado", "Viabilidade, dúvida e o Quadrado Mágico deixam claro por que a resposta saiu daquele jeito."],
+  ];
+  const stack = [["Linguagem", "Java 21"], ["Framework", "Spring Boot 3.3"], ["Segurança", "Spring Security 6 · senhas com BCrypt · proteção CSRF"],
+    ["Telas", "41 páginas em Thymeleaf"], ["Controladores", "23, um por área do sistema"], ["Banco de dados", "MySQL 8 · 19 tabelas · 93 stored procedures"],
+    ["Motor de cálculo", "CalculoParaconsistenteService + AgrupamentoService"], ["Versão", "IntelliC v20 R10 · R5"]];
+  const recursos = [
+    ["users", "Perfis acumuláveis", "IntelliC, Master, Coordenador, Padrão e Visitante. Uma pessoa pode ter mais de um."],
+    ["puzzle", "Família de problemas", "Compara análises relacionadas ao longo do tempo, todas com a mesma régua."],
+    ["file-text", "Modelo reutilizável", "Uma régua pronta que terceiros aplicam depois, com Grupos de Avaliação."],
+    ["gauge", "Pesos", "Peso diferente por critério e por especialista, quando o problema pede."],
+    ["traffic-cone", "Prazo para pareceres", "Se o prazo vence, quem não respondeu tudo sai do cálculo."],
+    ["graduation-cap", "Trilha EAD", "40 estudos de caso em 4 módulos para aprender o método na prática."],
+  ];
+  return `${titulo("sparkles", "O IntelliC por dentro", "Antes de usar, a gente quis entender. Rodamos o sistema do zero, lemos como ele é construído e fizemos o estudo inteiro dentro dele.")}
+  <section class="resposta1" style="--e:#3a78d8"><div class="kicker">${ic("bookmark", 16, "#ffb347")}O que é</div>
+    <p class="frase-grande" style="font-size:clamp(1.3rem,2.2vw,1.9rem)">Um sistema de apoio à decisão em grupo que usa <span>Lógica Paraconsistente Anotada Evidencial Eτ</span> para lidar com evidência a favor, evidência contra e contradição ao mesmo tempo.</p>
+    <p style="color:#d6e4fa">Desenvolvido sob a liderança do Prof. Fábio, no IFSP e no SENAC. É o que permitiu ouvir quatro especialistas que discordam sem jogar a discordância fora.</p></section>
+  ${titulo("award", "O que ele fez pela nossa análise", "", "p")}
+  <div class="grid g4">${dif.map(([i, t, d]) => `<div class="card"><h3>${ic(i, 20, "#ffb347")}${t}</h3><p style="color:#d6e4fa">${d}</p></div>`).join("")}</div>
+  ${titulo("clipboard-list", "Nosso passo a passo no sistema", "Prints reais do estudo, na ordem em que fizemos. Clique para ampliar. Nomes completos e e-mails foram ocultados.", "p")}
+  <div class="galeria">${GALERIA.slice(0, N_PASSOS).map(([arq, t, d], i) => `<figure><button class="foto" data-foto="${i}" aria-label="Ampliar: ${t}"><img src="assets/galeria/${arq}.jpg" alt="${t}" loading="lazy"><span class="passo-n">${i + 1}</span></button>
+    <figcaption><b>${t}</b><span>${d}</span></figcaption></figure>`).join("")}</div>
+  ${titulo("users", "Todos participaram: cada um no seu login", "As 8 contas do estudo, cada uma com o papel certo. Quatro pessoas da equipe e quatro especialistas, todos dentro do IntelliC.", "p")}
+  <div class="galeria logins">${GALERIA.slice(N_PASSOS).map(([arq, t, d], j) => { const i = j + N_PASSOS; const ag = j >= 4;
+    return `<figure class="${ag ? "fig-ag" : "fig-eq"}"><button class="foto" data-foto="${i}" aria-label="Ampliar: ${t}"><img src="assets/galeria/${arq}.jpg" alt="${t}" loading="lazy"><span class="selo-papel">${ag ? "Especialista" : t.split(" · ")[1]}</span></button>
+    <figcaption><b>${t.split(" · ")[0]}</b><span>${d}</span></figcaption></figure>`; }).join("")}</div>
+  <div class="grid duas" style="margin-top:28px">
+    <div>${titulo("puzzle", "Como ele é construído", "Lemos o pacote do sistema para entender a arquitetura.", "p")}
+      <div class="card tabela-wrap"><table class="stack"><tbody>${stack.map(([k, v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join("")}</tbody></table>
+      <p class="porque">${ic("eye", 16, "#ffb347")} O código separa bem as camadas: telas, regras de autorização (acessar, analisar e gerenciar um problema), o motor de cálculo e o banco. Foi lendo o motor que conseguimos reproduzir o cálculo aqui no site e conferir número por número.</p></div></div>
+    <div>${titulo("search", "O que mais ele oferece", "Recursos que vimos e que não precisamos neste estudo, mas que mostram até onde ele vai.", "p")}
+      <div class="grid g2">${recursos.map(([i, t, d]) => `<div class="tarefa">${ic(i, 24, "#8fb0e0")}<div><b>${t}</b><span>${d}</span></div></div>`).join("")}</div></div>
+  </div>`;
+}
+function abrirFoto(i) {
+  const [arq, t, d] = GALERIA[i]; const dlg = $("#lightbox");
+  dlg.querySelector("img").src = `assets/galeria/${arq}.jpg`; dlg.querySelector("img").alt = t;
+  dlg.querySelector("p").innerHTML = `<b>${i + 1}. ${t}</b> · ${d}`; dlg.showModal();
+}
+
+// ---- resultado: peças extras
+function mapaDivergencia() {
+  const ks = Object.keys(CRIT);
+  const cor = v => v >= 40 ? "#1f9d5a" : v >= 10 ? "#5cbf7d" : v > -10 ? "#c9a227" : v > -40 ? "#e07b39" : "#d14343";
+  const linhas = ESP.map(a => `<tr><td><b>${a.curto}</b><small>${a.papel}</small></td>${ks.map(k => { const [c, d] = a.notas[k]; const g = arred((c - d) * 10);
+    return `<td><span class="cel" style="--h:${cor(g)}" title="Chance ${c} · Dúvida ${d}">${sinal(g)}</span></td>`; }).join("")}</tr>`).join("");
+  const amplitude = ks.map(k => { const gs = ESP.map(a => arred((a.notas[k][0] - a.notas[k][1]) * 10)); return Math.max(...gs) - Math.min(...gs); });
+  return `<div class="card tabela-wrap"><table class="mapa"><thead><tr><th>Especialista</th>${ks.map(k => `<th>${CRIT[k][0]}<small>${k}</small></th>`).join("")}</tr></thead>
+    <tbody>${linhas}</tbody><tfoot><tr><td>Distância entre o mais otimista e o mais cético</td>${amplitude.map(v => `<td><b>${v}</b></td>`).join("")}</tr></tfoot></table>
+    <p class="desc" style="margin-top:10px">Cada célula é o grau de certeza da pessoa (Chance − Dúvida). Verde aponta para “funciona”, vermelho para “não funciona”. Passe o mouse para ver as notas.</p></div>`;
+}
+function votacaoVsIntellic() {
+  const todas = ESP.flatMap(a => Object.values(a.notas));
+  const mediaC = todas.reduce((s, v) => s + v[0], 0) / todas.length;
+  const mediaD = todas.reduce((s, v) => s + v[1], 0) / todas.length;
+  const fmt = v => v.toFixed(1).replace(".", ",");
+  return `<div class="grid duas vs">
+    <div class="card"><div class="kicker">${ic("users", 16, "#9db3d1")}Se fosse uma votação comum</div>
+      <p class="vs-num">${fmt(mediaC * 10)}%</p><p class="vs-sub">de “chance média” (${mediaC.toFixed(2).replace(".", ",")} de 10)</p>
+      <p style="color:#d6e4fa">A média diria que a estratégia passa raspando. A dúvida média de ${fmt(mediaD)} some no meio da conta, e ninguém vê que no Alcance um especialista deu 9 e outro deu 3.</p></div>
+    <div class="card vs-ic"><div class="kicker">${ic("sparkles", 16, "#ffb347")}O que o IntelliC mostrou</div>
+      <p class="vs-num" style="color:var(--fogo2)">${sinal(GC)}%</p><p class="vs-sub">de viabilidade · ${ESTADO.toLowerCase()}</p>
+      <p style="color:#d6e4fa">Ele separa evidência a favor e contra, junta os especialistas em grupos e respeita o mais cauteloso. Resultado: a estratégia <b>não</b> se sustenta sozinha, e dá para apontar exatamente em que critério ela falha.</p></div>
+  </div>`;
+}
+function oQueFariaVirar() {
+  const ks = Object.keys(CRIT);
+  return `<div class="grid g5">${ks.map(k => { const { rg, gc } = CALC[k]; const fraco = rg.reduce((m, g, i) => g.gc < rg[m].gc ? i : m, 0); const falta = LIMITE - rg[fraco].gc;
+    return `<div class="card falta"><b>${CRIT[k][0]}</b><small>hoje ${sinal(gc)}%</small>
+      <div class="trilho-falta"><div style="width:${Math.max(0, (gc + 100) / 2)}%"></div><i style="left:80%"></i></div>
+      <p>Faltam <b>${falta} pontos</b> no grupo ${NOMES_G[fraco]} (${rg[fraco].membros.map(m => m.nome).join(" e ")}).</p></div>`; }).join("")}</div>
+    <p class="porque">${ic("eye", 16, "#ffb347")} Para chegar a Viável, alguém do grupo mais cético precisaria dar, por exemplo, Chance 8 e Dúvida 2 em <b>todos</b> os critérios. Isso só acontece com outra estratégia, ou com o satélite somado a brigadas e combate à grilagem.</p>`;
+}
+
 // ---- fontes de pesquisa
 function paginaFontes() {
   const porUrl = new Map();
@@ -301,11 +430,11 @@ function paginaFontes() {
 }
 
 // ============================================================ navegação
-const ABAS = ["inicio", "especialistas", "resultado", "fontes", "facilitadores", "analistas"];
+const ABAS = ["inicio", "intellic", "especialistas", "resultado", "fontes", "facilitadores", "analistas"];
 let estado = { aba: "inicio", sub: null };
 function render() {
   document.querySelectorAll(".aba").forEach(b => b.setAttribute("aria-selected", b.dataset.aba === estado.aba));
-  const html = { inicio: paginaInicio, especialistas: () => paginaEspecialistas(estado.sub), resultado: paginaResultado, fontes: paginaFontes,
+  const html = { inicio: paginaInicio, intellic: paginaIntellic, especialistas: () => paginaEspecialistas(estado.sub), resultado: paginaResultado, fontes: paginaFontes,
     facilitadores: () => paginaGrupo("facilitadores", estado.sub), analistas: () => paginaGrupo("analistas", estado.sub) }[estado.aba]();
   $("#conteudo").innerHTML = html;
   preencherRobos();
@@ -318,6 +447,8 @@ function irPara(aba, sub = null) {
 }
 document.addEventListener("click", e => {
   const b = e.target.closest("button"); if (!b) return;
+  if (b.dataset.foto) { abrirFoto(+b.dataset.foto); return; }
+  if (b.hasAttribute("data-fechar")) { $("#lightbox").close(); return; }
   if (b.dataset.aba) irPara(b.dataset.aba);
   else if (b.dataset.sub) irPara(estado.aba, b.dataset.sub);
   else if (b.dataset.crit) { critAtual = b.dataset.crit; document.querySelectorAll("[data-crit]").forEach(x => x.setAttribute("aria-pressed", x === b)); $("#conta").innerHTML = contaCriterio(critAtual); $("#quadrado").innerHTML = quadradoSVG(critAtual); }
