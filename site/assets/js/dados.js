@@ -100,6 +100,29 @@ export const LEIT = { EFI: "Helena e Marcos acreditam; Raimundo e Jaci duvidam q
   ESC: "A maior briga: Helena dá 9, Raimundo dá 3. O satélite enxerga, a brigada nem sempre chega.",
   SOC: "O alerta ainda não chega à aldeia: baixa adesão das comunidades." };
 
+// O que cada pessoa fez além das tarefas do papel. [ícone, título, descrição]
+export const INDIVIDUAL = {
+  wilk: [
+    ["file-text", "Montou o estudo no IntelliC", "Cadastrou o problema, os 5 critérios, os participantes e liberou para os pareceres."],
+    ["bot", "Conduziu os agentes de IA", "Criou os 4 especialistas e levou o debate entre eles até as notas finais."],
+    ["sparkles", "Abre e fecha o pitch", "Apresenta a pergunta do estudo e a conclusão para a banca."],
+  ],
+  gislene: [
+    ["ruler", "Revisou a régua", "Conferiu se os 5 critérios estavam claros e se nota alta sempre significava “bom”."],
+    ["compass", "Apresenta a estrutura", "No pitch, explica o estudo e a governança com o menor privilégio."],
+  ],
+  joseane: [
+    ["gauge", "Leu o resultado", "Interpretou o −2% e o 0% de dúvida e o que isso significa na prática."],
+    ["scale", "Teste de robustez", "Mostra que, trocando os grupos, o resultado oscila mas não chega a 60%."],
+    ["target", "Apresenta o resultado", "No pitch, abre a conta de um critério e explica o Quadrado Mágico."],
+  ],
+  hellen: [
+    ["bookmark", "Fontes de pesquisa", "Reuniu os dados do INPE, MapBiomas, Ibama e IPAM que embasam os agentes."],
+    ["users", "Perfis dos especialistas", "Ajudou a definir quem seriam os 4 agentes e o que cada um avalia."],
+    ["messages-square", "Apresenta o método", "No pitch, explica como os especialistas foram construídos."],
+  ],
+};
+
 // Tipo de cada fonte, usado na aba Fontes.
 export const TIPO_FONTE = {
   "INPE · Programa Queimadas": "Órgãos públicos", "INPE · satélite de referência": "Órgãos públicos", "INPE · dados de 2024": "Órgãos públicos",
